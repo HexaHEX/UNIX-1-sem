@@ -9,6 +9,11 @@
 #define     BUFFSIZE	2048
 const char* ADDRFIFO = "/tmp/addrfifo";
 
+void err_sys(const char* error)
+{
+	perror(error);
+	exit(1);
+}
 
 int main(int argc, char* argv[])
 {
@@ -18,42 +23,34 @@ int main(int argc, char* argv[])
 	int  pid_int;
 	char mainfifo[12];
 
-	if(argc != 2){
-		printf("wrong input!");
-		exit(1);	
-	}
+	if(argc != 2)
+		err_sys("INCORRECT INPUT");
 	
 	int input_fd = open(argv[1], O_RDONLY);
 
-	if((input_fd < 0) && (errno != EEXIST)){
-		printf("wrong file");
-		exit(1);	
-	}
+	if((input_fd < 0) && (errno != EEXIST))
+		err_sys("WRONG INPUT FILE");
 
-	if((mkfifo(ADDRFIFO, 0644) < 0) && (errno != EEXIST)){
-		printf("makefifo error");
-		exit(1);
-	}
+	if((mkfifo(ADDRFIFO, 0644) < 0) && (errno != EEXIST))
+		err_sys("MKFIFO ERROR");
 
 	int addr_fd = open(ADDRFIFO, O_RDWR);
 
-	if((addr_fd < 0) && (errno != EEXIST)){
-		printf("open fifo error");
-		exit(1);
-	}
+	if((addr_fd < 0) && (errno != EEXIST))
+		err_sys("OPEN FIFO ERROR");
+
 	
 	n = read(addr_fd, &pid_int, sizeof(int));
-	if(n < 0){
-		printf("read error");
-		exit(1);
-	}
+	if(n < 0)
+		err_sys("READ ERROR");
 	close(addr_fd);
 
 	sprintf(mainfifo, "%d", pid_int);	
 
-	if((mkfifo(mainfifo, 0644) < 0) && (errno != EEXIST))	{
-		printf("makefifo error");
-		exit(1);		
+	if((mkfifo(mainfifo, 0644) < 0) && (errno != EEXIST))
+	{
+
+		err_sys("MKFIFO ERROR");		
 	}
 
 	int helper = open(mainfifo, O_RDONLY | O_NONBLOCK);
@@ -61,28 +58,32 @@ int main(int argc, char* argv[])
 
 	close(helper);	
 
-	if((main_fd < 0) && (errno != EEXIST)){
-		printf("open fifo error");
-		exit(1);
+	if((main_fd < 0) && (errno != EEXIST))
+	{
+
+		err_sys("OPEN FIFO ERROR");
 	}
 	
 	n = read(input_fd, buf, BUFFSIZE);
-	if (write(main_fd, buf, n) != n){	
-		printf("write error");
-		exit(1);
-	}
+	if (write(main_fd, buf, n) != n)
+		{	
+
+			err_sys("WRITE ERROR");
+		}
 	
 	
 	
 	while ((n = read(input_fd, buf, BUFFSIZE)) > 0)
-		if (write(main_fd, buf, n) != n){	
-			printf("write error");
-			exit(1);
+		if (write(main_fd, buf, n) != n)
+		{	
+
+			err_sys("WRITE ERROR");
 		}
 
-	if (n < 0){
-		printf("read error");
-		exit(1);
+	if (n < 0)
+	{
+
+		err_sys("READ ERRRO");
 	}
 
 	remove(mainfifo);
