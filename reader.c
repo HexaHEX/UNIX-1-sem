@@ -72,7 +72,7 @@ int main()
 
 	if(succesful_rd == 0){
 
-		err_sys("SERVER TIMEOUT");
+		err_sys("WRITER TIMEOUT");
 	}
 
 	else	{
