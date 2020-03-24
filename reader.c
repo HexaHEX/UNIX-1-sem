@@ -10,6 +10,11 @@
 const char* ADDRFIFO = "/tmp/addrfifo";
 char pidname[12];
 
+void err_sys(const char* error)
+{
+	perror(error);
+	exit(1);
+}
 
 int main()
 {
@@ -20,72 +25,69 @@ int main()
 	
 	sprintf(pidname, "%d", pid_int);
 
-	if((mkfifo(ADDRFIFO, 0644) < 0) && (errno != EEXIST)){
-		printf("mkfifo error");
-		exit(1);
-	}
+	if((mkfifo(ADDRFIFO, 0644) < 0) && (errno != EEXIST))
+		err_sys("MKFIFO ERROR");
+
 	int addr_fd = open(ADDRFIFO, O_WRONLY);
 	
-	if((addr_fd < 0) && (errno != EEXIST)){
-		printf("open fifo error");
-		exit(1);
-	}
+	if((addr_fd < 0) && (errno != EEXIST))
+		err_sys("OPEN FIFO ERROR");
 	
-	if((mkfifo(pidname, 0644) < 0) && (errno != EEXIST)){
-		printf("mkfifo error");
-		exit(1);
-	}
+	if((mkfifo(pidname, 0644) < 0) && (errno != EEXIST))
+		err_sys("MKFIFO ERROR");
+	
 	int main_fd = open(pidname, O_RDONLY | O_NONBLOCK);
 	
 	if((main_fd < 0) && (errno != EEXIST)){
-		printf("open fifo error");
-		exit(1);
+
+		err_sys("OPEN FIFO ERROR");
 	}
 
 	if (write(addr_fd, &pid_int, sizeof(int)) != sizeof(int)){
-		printf("write error");
-		exit(1);
+			err_sys("WRITE ERROR");
 	}
 	close(addr_fd);
 
 	int succesful_rd = 0;
+
 
 	for(int i = 0; i < 15; i++){
 		if((n = read(main_fd, buf, BUFFSIZE)) == 0){
 			sleep(1);
 		}
 		if(n < 0){				
-			printf("read fifo error");
-			exit(1);
+			err_sys("FIFO READ ERROR");
 		}
 		if(n > 0){
 			if (write(STDOUT_FILENO, buf, n) != n){
-				printf("write error");
-				exit(1);
+
+				err_sys("WRITE ERROR");
 			}	
 			succesful_rd = 1;
+			
 			break;
+
 		}
 	}
 
 	if(succesful_rd == 0){
-		printf("writer timeout!");
-		exit(1);
+
+		err_sys("SERVER TIMEOUT");
 	}
 
 	else	{
 		while ((n = read(main_fd, buf, BUFFSIZE)) > 0)
 			if (write(STDOUT_FILENO, buf, n) != n){
-				printf("write error");
-				exit(1);
+
+				err_sys("WRITE ERROR");
 			}
 
 		if (n < 0){
-			printf("read error");
-			exit(1);
+			err_sys("READ ERRRO");
 		}
 
 	}
+
 
 	remove(pidname);
 	exit(0);
