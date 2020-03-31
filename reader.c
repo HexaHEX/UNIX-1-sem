@@ -6,7 +6,7 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#define     BUFFSIZE	2048
+#define     BUFFSIZE	1024
 const char* ADDRFIFO = "/tmp/addrfifo";
 char pidname[12];
 
@@ -89,6 +89,6 @@ int main()
 	}
 
 
-	remove(pidname);
+	//remove(pidname);
 	exit(0);
 }
