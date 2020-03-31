@@ -6,7 +6,7 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#define     BUFFSIZE	2048
+#define     BUFFSIZE	1024
 const char* ADDRFIFO = "/tmp/addrfifo";
 
 void err_sys(const char* error)
