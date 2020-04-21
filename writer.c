@@ -9,12 +9,14 @@
 #define     BUFFSIZE	1024
 const char* ADDRFIFO = "/tmp/addrfifo";
 
-void err_sys(const char* error){
+void err_sys(const char* error)
+{
 	perror(error);
 	exit(1);
 }
 
-int main(int argc, char* argv[]){
+int main(int argc, char* argv[])
+{
 	int  n;
 	char buf[BUFFSIZE];
 	
@@ -45,9 +47,7 @@ int main(int argc, char* argv[]){
 
 	sprintf(mainfifo, "%d", pid_int);	
 
-	if((mkfifo(mainfifo, 0644) < 0) && (errno != EEXIST))
-	{
-
+	if((mkfifo(mainfifo, 0644) < 0) && (errno != EEXIST)){
 		err_sys("MKFIFO ERROR");		
 	}
 
@@ -63,6 +63,7 @@ int main(int argc, char* argv[]){
 	
 	n = read(input_fd, buf, BUFFSIZE);
 	if (write(main_fd, buf, n) != n){	
+
 			err_sys("WRITE ERROR");
 		}
 	
@@ -70,10 +71,12 @@ int main(int argc, char* argv[]){
 	
 	while ((n = read(input_fd, buf, BUFFSIZE)) > 0)
 		if (write(main_fd, buf, n) != n){	
+
 			err_sys("WRITE ERROR");
 		}
 
 	if (n < 0){
+
 		err_sys("READ ERRRO");
 	}
 
