@@ -39,17 +39,15 @@ int main()
 	int main_fd = open(pidname, O_RDONLY | O_NONBLOCK);
 	
 	if((main_fd < 0) && (errno != EEXIST)){
-
 		err_sys("OPEN FIFO ERROR");
 	}
 
-	if (write(addr_fd, &pid_int, sizeof(int)) != sizeof(int)){
+	if (write(addr_fd, &pid_int, sizeof(int)) != sizeof(int))	{
 			err_sys("WRITE ERROR");
 	}
 	close(addr_fd);
 
 	int succesful_rd = 0;
-
 
 	for(int i = 0; i < 15; i++){
 		if((n = read(main_fd, buf, BUFFSIZE)) == 0){
@@ -72,7 +70,7 @@ int main()
 
 	if(succesful_rd == 0){
 
-		err_sys("WRITER TIMEOUT");
+		err_sys("SERVER TIMEOUT");
 	}
 
 	else	{
@@ -83,11 +81,10 @@ int main()
 			}
 
 		if (n < 0){
-			err_sys("READ ERR");
+			err_sys("READ ERRRO");
 		}
 
 	}
-
 
 	//remove(pidname);
 	exit(0);
