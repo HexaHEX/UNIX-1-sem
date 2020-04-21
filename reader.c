@@ -10,14 +10,12 @@
 const char* ADDRFIFO = "/tmp/addrfifo";
 char pidname[12];
 
-void err_sys(const char* error)
-{
+void err_sys(const char* error){
 	perror(error);
 	exit(1);
 }
 
-int main()
-{
+int main(){
 	int  n;
 	char buf[BUFFSIZE];
 	int  pid_int = getpid();
@@ -42,7 +40,7 @@ int main()
 		err_sys("OPEN FIFO ERROR");
 	}
 
-	if (write(addr_fd, &pid_int, sizeof(int)) != sizeof(int))	{
+	if (write(addr_fd, &pid_int, sizeof(int)) != sizeof(int)){
 			err_sys("WRITE ERROR");
 	}
 	close(addr_fd);
