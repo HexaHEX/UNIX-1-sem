@@ -9,14 +9,12 @@
 #define     BUFFSIZE	1024
 const char* ADDRFIFO = "/tmp/addrfifo";
 
-void err_sys(const char* error)
-{
+void err_sys(const char* error){
 	perror(error);
 	exit(1);
 }
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]){
 	int  n;
 	char buf[BUFFSIZE];
 	
@@ -58,31 +56,24 @@ int main(int argc, char* argv[])
 
 	close(helper);	
 
-	if((main_fd < 0) && (errno != EEXIST))
-	{
+	if((main_fd < 0) && (errno != EEXIST)){
 
 		err_sys("OPEN FIFO ERROR");
 	}
 	
 	n = read(input_fd, buf, BUFFSIZE);
-	if (write(main_fd, buf, n) != n)
-		{	
-
+	if (write(main_fd, buf, n) != n){	
 			err_sys("WRITE ERROR");
 		}
 	
 	
 	
 	while ((n = read(input_fd, buf, BUFFSIZE)) > 0)
-		if (write(main_fd, buf, n) != n)
-		{	
-
+		if (write(main_fd, buf, n) != n){	
 			err_sys("WRITE ERROR");
 		}
 
-	if (n < 0)
-	{
-
+	if (n < 0){
 		err_sys("READ ERRRO");
 	}
 
