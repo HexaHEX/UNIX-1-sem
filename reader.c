@@ -34,7 +34,7 @@ int main(){
 	if((mkfifo(pidname, 0644) < 0) && (errno != EEXIST))
 		err_sys("MKFIFO ERROR");
 	
-	int main_fd = open(pidname, O_RDONLY | O_NONBLOCK);
+	int main_fd = open(pidname, O_RDONLY);
 	
 	if((main_fd < 0) && (errno != EEXIST)){
 
