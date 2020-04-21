@@ -83,7 +83,7 @@ int main()
 			}
 
 		if (n < 0){
-			err_sys("READ ERRRO");
+			err_sys("READ ERR");
 		}
 
 	}
