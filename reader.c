@@ -1,6 +1,6 @@
 #include <unistd.h>
 #include <stdlib.h>
-#include <stdio.h>
+//#include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -45,49 +45,42 @@ int main(){
 			err_sys("WRITE ERROR");
 	}
 	close(addr_fd);
-
+	int ec = 0;
 	int succesful_rd = 0;
 
 
-	for(int i = 0; i < 15; i++){
+	while (1){
 		if((n = read(main_fd, buf, BUFFSIZE)) == 0){
 			//printf("!!!!!!");
-			sleep(1);
+			sleep(2);
 		}
-		if(n < 0){				
-			err_sys("FIFO READ ERROR");
+		if(n < 0 && errno != EAGAIN){				
+			err_sys("FIFO READ ERROR, continue");
+			break;
+		} else {
+			ec++;
+		}
+		if( ec > 15){
+			//printf("EAGAIN ERROR\n");
+			break;
 		}
 		if(n > 0){
 			if (write(STDOUT_FILENO, buf, n) != n){
 
 				err_sys("WRITE ERROR");
 			}	
-			succesful_rd = 1;
-			
-			break;
-
-		}
-	}
-
-	if(succesful_rd == 0){
-
-		err_sys("WRITER TIMEOUT");
-	}
-
-	else	{
- 		
-		while ((n = read(main_fd, buf, BUFFSIZE)) > 0)
+			while ((n = read(main_fd, buf, BUFFSIZE)) > 0)
 			if (write(STDOUT_FILENO, buf, n) != n){
 
 				err_sys("WRITE ERROR");
 			}
+			if (n == 0){
+				
+				break;
+			}
 
-		if (n < 0){
-			err_sys("READ ERRRO");
 		}
-
 	}
-
 
 	//remove(pidname);
 	exit(0);
